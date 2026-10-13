@@ -55,16 +55,18 @@ class AssistantService:
                 )
             return {"action": "chat", "reply": reply, "provider": "ollama"}
         except Exception as exc:
-                logger.exception("Local Ollama fallback failed")
-                if provider_mode != "local" and not self.cloud_model.is_configured:
-                    detail = (
-                        "No Vercel AI Gateway key is configured and local Ollama is "
-                        "unavailable. Configure AI_GATEWAY_API_KEY or start Ollama."
-                    )
-                else:
-                    detail = (
-                        "Both the cloud request and local Ollama fallback failed. "
-                        "Check your Vercel AI Gateway credentials/network and that "
-                        "Ollama is running with the configured model."
-                    )
-                raise RuntimeError(detail) from exc
+            logger.exception("Local Ollama fallback failed")
+            if provider_mode == "local":
+                detail = "Local Ollama is unavailable. Start Ollama and check the configured model."
+            elif not self.cloud_model.is_configured:
+                detail = (
+                    "No Vercel AI Gateway key is configured and local Ollama is unavailable. "
+                    "Configure AI_GATEWAY_API_KEY or start Ollama."
+                )
+            else:
+                detail = (
+                    "Both the cloud request and local Ollama fallback failed. "
+                    "Check your Vercel AI Gateway credentials/network and that "
+                    "Ollama is running with the configured model."
+                )
+            raise RuntimeError(detail) from exc
