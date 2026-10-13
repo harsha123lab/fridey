@@ -1,27 +1,23 @@
 # FRIDEY AI
 
-FRIDEY is a personal assistant project with a Windows-first Python API and voice client. Its chat brain can use Qwen through Vercel AI Gateway and fall back to a local Ollama Qwen model.
+FRIDEY is a Windows-first personal assistant using Qwen via Vercel AI Gateway and local Ollama fallback.
 
-## Start the AI service
+## Run locally
+1. Install Python 3.11/3.12 and Ollama; run `ollama pull qwen2.5:3b`.
+2. Follow [AI service setup](ai-service/README.md).
+3. Add `AI_GATEWAY_API_KEY` to `ai-service/.env` for cloud Qwen. Never commit secrets.
+4. Run `ai-service/run_api.bat`, then visit http://127.0.0.1:8000/dashboard.
+5. Run `ai-service/run_voice.bat` in another terminal.
 
-1. Install Python 3.11 or 3.12 and Ollama.
-2. In a terminal, download the local fallback model with `ollama pull qwen2.5:3b`.
-3. Open the `ai-service` folder and follow [the AI service setup guide](ai-service/README.md).
-4. To enable cloud Qwen, add `AI_GATEWAY_API_KEY` to `ai-service/.env` (never commit the secret).
-5. Start `run_api.bat`, then test `http://127.0.0.1:8000/health`.
-6. Start `run_voice.bat` in a second terminal and say “Friday”.
+## Included
+- Cloud Qwen and local Ollama fallback
+- SQLite persistent memory
+- Reminder storage/completion (no notifications yet)
+- File Q&A for TXT, MD, CSV, JSON, LOG, PDF, DOCX
+- Optional WhatsApp Cloud API and SMTP email
+- Responsive mobile-friendly dashboard/PWA manifest
+- Best-effort live web snippets; fail-closed when current facts cannot be verified
+- Optional Vosk offline voice recognition
 
-## Current v1 capabilities
-
-- Vercel AI Gateway Qwen cloud-first chat with local Ollama fallback
-- Local chat using `qwen2.5:3b` when cloud credentials are absent or cloud calls fail
-- Fixed, allowlisted Windows app and website actions
-- Best-effort DuckDuckGo snippets for questions likely to need current information
-- Speech recognition and text-to-speech through a separate voice client
-- FastAPI health endpoint and command endpoint
-
-## Important limitations
-
-This is a working-code starting point, not a finished all-platform assistant. Online speech recognition needs internet access; current web search is best-effort. Cloud usage may incur charges. Persistent personal memory, automatic startup, offline wake-word detection, Android, dashboard, Java backend integration, and IoT controls are still future work. Tests have not been run on the user's Windows computer.
-
-See [the AI service setup guide](ai-service/README.md) for provider configuration and troubleshooting.
+## Limits
+No guaranteed current facts. WhatsApp/email require provider credentials. Offline voice requires a downloaded Vosk model and Thanglish recognition is not guaranteed. Reminders are stored but not scheduled/notified. Dashboard is not a native Android app; remote access/authentication is not included. Keep the local API private.
