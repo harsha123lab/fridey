@@ -1,0 +1,67 @@
+name: Build FRIDEY Windows Installer
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "ai-service/**"
+      - "packaging/windows/**"
+      - ".github/workflows/build-windows.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-installer:
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: ai-service/requirements.txt
+
+      - name: Install FRIDEY dependencies and packager
+        working-directory: ai-service
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt pyinstaller
+
+      - name: Build bundled FRIDEY executable
+        working-directory: ai-service
+        shell: pwsh
+        run: |
+          pyinstaller --noconfirm --clean --onefile --name FRIDEY `
+            --add-data "dashboard;dashboard" `
+            --add-data ".env.example;." `
+            --collect-submodules app `
+            --collect-all uvicorn `
+            --collect-all fastapi `
+            --collect-all pydantic `
+            --collect-all pydantic_core `
+            --collect-all ddgs `
+            --collect-all pyttsx3 `
+            --collect-all speech_recognition `
+            --collect-all pyautogui `
+            --hidden-import pyttsx3.drivers.sapi5 `
+            --hidden-import comtypes `
+            fridey_launcher.py
+
+      - name: Install Inno Setup
+        run: choco install innosetup --yes --no-progress
+
+      - name: Create Windows installer
+        run: iscc packaging\windows\FRIDEY.iss
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FRIDEY-Windows-Installer
+          path: ai-service/dist/FRIDEY-Setup.exe
+          if-no-files-found: error
+          retention-days: 30
