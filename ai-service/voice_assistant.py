@@ -1,7 +1,10 @@
 import json, os, urllib.error, urllib.request
+from pathlib import Path
+from dotenv import load_dotenv
 import pyttsx3
 import speech_recognition as sr
 
+load_dotenv(Path(__file__).resolve().with_name(".env"))
 API_URL="http://127.0.0.1:8000/command"
 WAKE_WORDS=("friday","fridey")
 EXIT_PHRASES=("stop listening","exit assistant","goodbye friday","shutdown fridey")
