@@ -1,9 +1,10 @@
 """Persistent SQLite memory and reminder storage."""
+import os
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 
-DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+DATA_DIR = Path(os.environ.get("FRIDEY_DATA_DIR", str(Path(__file__).resolve().parents[2] / "data"))).expanduser()
 DB_PATH = DATA_DIR / "fridey.db"
 
 def connect():
